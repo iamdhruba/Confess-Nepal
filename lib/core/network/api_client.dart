@@ -20,7 +20,7 @@ class ApiClient {
   // Set via --dart-define=BASE_URL=https://your-app.onrender.com/api at build time
   // Defaults: web=localhost, Android emulator=10.0.2.2
   static String get _baseUrl {
-    const defined = String.fromEnvironment('BASE_URL', defaultValue: 'https://confess-nepal-backend.onrender.com/api');
+    const defined = String.fromEnvironment('BASE_URL', defaultValue: 'https://confess-nepal.onrender.com/api');
     if (defined.isNotEmpty) return defined;
     if (kIsWeb) return 'http://localhost:5000/api';
     return 'http://10.0.2.2:5000/api';
