@@ -84,11 +84,18 @@ const userSchema = new mongoose.Schema(
 // Hash password before saving
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password') || !this.password) return next();
+  // Guard against bcrypt DoS — truncate at 72 bytes
+  if (this.password.length > 72) {
+    const err = new Error('Password too long');
+    err.statusCode = 400;
+    return next(err);
+  }
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
 userSchema.methods.correctPassword = async function (candidate) {
+  if (!this.password || !candidate) return false;
   return bcrypt.compare(candidate, this.password);
 };
 

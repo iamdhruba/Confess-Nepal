@@ -16,7 +16,11 @@ const sendToken = (res, user, statusCode) => {
 };
 
 const isValidPassword = (p) =>
-  p.length >= 8 && /[A-Z]/.test(p) && /[0-9]/.test(p);
+  typeof p === 'string' &&
+  p.length >= 8 &&
+  p.length <= 72 && // bcrypt silently truncates at 72 bytes — enforce this as max
+  /[A-Z]/.test(p) &&
+  /[0-9]/.test(p);
 
 // POST /api/auth/device-register
 const deviceRegister = async (req, res) => {
@@ -112,7 +116,6 @@ const login = async (req, res) => {
 
     sendToken(res, user, 200);
   } catch (error) {
-    console.error('Login error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
