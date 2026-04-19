@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.confessnepal.confess_nepal"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -21,16 +21,16 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "keystore/release.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-            keyAlias = System.getenv("KEY_ALIAS") ?: ""
-            keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+            storeFile = file("keystore/release.jks")
+            storePassword = "confessnepal123"
+            keyAlias = "confessnepal"
+            keyPassword = "confessnepal123"
         }
     }
 
     defaultConfig {
         applicationId = "com.confessnepal.confess_nepal"
-        minSdk = 21
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
