@@ -58,18 +58,23 @@ const signup = async (req, res) => {
       });
     }
 
-    const emailExists = await User.findOne({ email: email.toLowerCase() });
-    if (emailExists) {
+    const safeDeviceId = String(deviceId).replace(/[^a-zA-Z0-9_\-]/g, '');
+    const deviceUser = await User.findOne({ deviceId: safeDeviceId });
+    const emailUser = await User.findOne({ email: email.toLowerCase() });
+
+    // Email already belongs to a DIFFERENT device — block
+    if (emailUser && (!deviceUser || emailUser._id.toString() !== deviceUser._id.toString())) {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    const safeDeviceId = String(deviceId).replace(/[^a-zA-Z0-9_\-]/g, '');
-    let user = await User.findOne({ deviceId: safeDeviceId });
-    if (user) {
-      user.email = email.toLowerCase();
-      user.password = password;
-      if (username) user.username = username.trim().slice(0, 30);
-      await user.save();
+    let user;
+    if (deviceUser) {
+      // Link email to existing device account
+      deviceUser.email = email.toLowerCase();
+      deviceUser.password = password;
+      if (username) deviceUser.username = username.trim().slice(0, 30);
+      await deviceUser.save();
+      user = deviceUser;
     } else {
       user = await User.create({
         deviceId: safeDeviceId,
@@ -94,8 +99,11 @@ const login = async (req, res) => {
     }
 
     const user = await User.findOne({ email: String(email).toLowerCase() }).select('+password');
-    if (!user || !user.password) {
+    if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
+    }
+    if (!user.password) {
+      return res.status(401).json({ message: 'This account has no password set. Please use forgot password to set one.' });
     }
 
     const isCorrect = await user.correctPassword(password);
@@ -105,6 +113,7 @@ const login = async (req, res) => {
 
     sendToken(res, user, 200);
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
