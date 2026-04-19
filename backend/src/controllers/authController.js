@@ -25,7 +25,6 @@ const deviceRegister = async (req, res) => {
     if (!deviceId || typeof deviceId !== 'string' || deviceId.length < 8 || deviceId.length > 128) {
       return res.status(400).json({ message: 'Invalid deviceId' });
     }
-    // Strip anything that isn't alphanumeric, dash, or underscore
     const safeDeviceId = deviceId.replace(/[^a-zA-Z0-9_\-]/g, '');
     if (safeDeviceId.length < 8) {
       return res.status(400).json({ message: 'Invalid deviceId format' });
@@ -223,7 +222,11 @@ const updateProfile = async (req, res) => {
   try {
     const { username, bio } = req.body;
     const updates = {};
-    if (username !== undefined) updates.username = String(username).trim().slice(0, 30);
+    if (username !== undefined) {
+      const clean = String(username).trim().replace(/[^a-zA-Z0-9_\- ]/g, '').slice(0, 30);
+      if (clean.length < 2) return res.status(400).json({ message: 'Username too short' });
+      updates.username = clean;
+    }
     if (bio !== undefined) updates.bio = String(bio).trim().slice(0, 160);
 
     if (Object.keys(updates).length === 0) {

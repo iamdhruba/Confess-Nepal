@@ -66,6 +66,7 @@ const limiter = rateLimit({
   message: { message: 'Too many requests, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.method === 'OPTIONS',
 });
 app.use('/api', limiter);
 
@@ -76,6 +77,7 @@ const authLimiter = rateLimit({
   message: { message: 'Too many auth attempts, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.method === 'OPTIONS',
 });
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/signup', authLimiter);

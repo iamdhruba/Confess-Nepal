@@ -248,13 +248,10 @@ const search = async (req, res) => {
 
     const filter = { isHidden: false };
     if (q) {
-      // Escape regex special chars to prevent ReDoS
-      const escaped = String(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').slice(0, 100);
-      filter.$or = [
-        { content: { $regex: escaped, $options: 'i' } },
-        { locationTag: { $regex: escaped, $options: 'i' } },
-        { mood: { $regex: escaped, $options: 'i' } },
-      ];
+      const term = String(q).trim().slice(0, 100);
+      if (term.length < 2) return res.status(400).json({ message: 'Search term too short' });
+      // Use text index search instead of regex to prevent ReDoS
+      filter.$text = { $search: term };
     }
 
     const [confessions, total] = await Promise.all([
@@ -267,7 +264,23 @@ const search = async (req, res) => {
 
     res.status(200).json({ confessions: data, total, page: parsedPage, totalPages: Math.ceil(total / parsedLimit) });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
+    // Fallback to regex if text index not available
+    try {
+      const { q } = req.query;
+      const { parsedPage, parsedLimit, skip } = parsePage(req.query.page, req.query.limit);
+      const filter = { isHidden: false };
+      if (q) {
+        const escaped = String(q).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&').slice(0, 50);
+        filter.content = { $regex: escaped, $options: 'i' };
+      }
+      const confessions = await Confession.find(filter).sort({ createdAt: -1 }).skip(skip).limit(parsedLimit).lean();
+      const total = await Confession.countDocuments(filter);
+      const reactionMap = await buildReactionMap(confessions.map((c) => c._id), req.user?._id);
+      const data = attachUserFlags(confessions, req.user?._id, reactionMap);
+      res.status(200).json({ confessions: data, total, page: parsedPage, totalPages: Math.ceil(total / parsedLimit) });
+    } catch (fallbackError) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
   }
 };
 
