@@ -20,24 +20,18 @@ const notificationRoutes = require('./routes/notificationRoutes');
 
 const app = express();
 
+// Trust proxy — required for Render/Heroku/etc. to correctly identify client IPs
+app.set('trust proxy', 1);
+
 // Security headers
 app.use(helmet());
 
-// CORS — locked to allowed origins in production
-const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? (process.env.ALLOWED_ORIGINS || '').split(',').map(o => o.trim())
-  : ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:8080', 'http://localhost:52000', 'http://localhost:52001', 'http://127.0.0.1:5000'];
-
+// CORS — allow all origins (mobile-first API)
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl)
-    if (!origin) return callback(null, true);
-    if (process.env.NODE_ENV !== 'production') return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    callback(new Error('Not allowed by CORS'));
-  },
+  origin: true,
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 }));
 
 // Request logging
