@@ -23,16 +23,20 @@ const app = express();
 // Trust proxy — required for Render/Heroku/etc. to correctly identify client IPs
 app.set('trust proxy', 1);
 
-// Security headers
-app.use(helmet());
-
-// CORS — allow all origins (mobile-first API)
-app.use(cors({
+// CORS — allow all origins (mobile-first API), must be before helmet
+const corsOptions = {
   origin: true,
-  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-}));
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// Security headers
+app.use(helmet({ crossOriginResourcePolicy: false }));
 
 // Request logging
 if (process.env.NODE_ENV === 'development') {
