@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:confess_nepal/core/theme/app_colors.dart';
+import 'package:confess_nepal/core/utils/app_alerts.dart';
 import '../providers/profile_provider.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -35,23 +36,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         );
     if (!mounted) return;
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
+      AppAlerts.showError(context, error);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Password changed successfully ✅'),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
+      AppAlerts.showSuccess(context, 'Password changed successfully');
       Navigator.pop(context);
     }
   }
@@ -59,9 +46,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoading = context.watch<ProfileProvider>().isAuthLoading;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? AppColors.backgroundPrimary : AppColors.lightSurface;
+    final cardColor = isDark ? AppColors.backgroundSecondary : AppColors.lightElevated;
+    final textPrimary = isDark ? AppColors.textPrimary : AppColors.textPrimaryLight;
+    final textSecondary = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
+    final textTertiary = isDark ? AppColors.textTertiary : AppColors.textTertiaryLight;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundPrimary,
+      backgroundColor: bgColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -72,22 +65,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: AppColors.backgroundSecondary,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(Icons.arrow_back_rounded,
-                          color: AppColors.textPrimary, size: 20),
+                      width: 40, height: 40,
+                      decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(12)),
+                      child: Icon(Icons.arrow_back_rounded, color: textPrimary, size: 20),
                     ),
                   ),
                   const Spacer(),
-                  const Text('Change Password',
-                      style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700)),
+                  Text('Change Password', style: TextStyle(color: textPrimary, fontSize: 18, fontWeight: FontWeight.w700)),
                   const Spacer(),
                   const SizedBox(width: 40),
                 ],
@@ -102,76 +86,29 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 24),
-                      _buildField(
-                        controller: _currentCtrl,
-                        label: 'Current Password',
-                        hint: '••••••••',
-                        obscure: _obscureCurrent,
-                        toggle: () => setState(
-                            () => _obscureCurrent = !_obscureCurrent),
-                        validator: (v) => v == null || v.isEmpty
-                            ? 'Required'
-                            : null,
-                      ),
+                      _buildField(context, controller: _currentCtrl, label: 'Current Password', hint: '••••••••', obscure: _obscureCurrent, toggle: () => setState(() => _obscureCurrent = !_obscureCurrent), validator: (v) => (v == null || v.isEmpty) ? 'Required' : null, fillColor: cardColor, textColor: textPrimary, labelColor: textSecondary, hintColor: textTertiary),
                       const SizedBox(height: 16),
-                      _buildField(
-                        controller: _newCtrl,
-                        label: 'New Password',
-                        hint: 'Min 6 characters',
-                        obscure: _obscureNew,
-                        toggle: () =>
-                            setState(() => _obscureNew = !_obscureNew),
-                        validator: (v) {
-                          if (v == null || v.isEmpty) return 'Required';
-                          if (v.length < 6) return 'Minimum 6 characters';
-                          return null;
-                        },
-                      ),
+                      _buildField(context, controller: _newCtrl, label: 'New Password', hint: 'Min 8 characters', obscure: _obscureNew, toggle: () => setState(() => _obscureNew = !_obscureNew), validator: (v) { if (v == null || v.isEmpty) return 'Required'; if (v.length < 8) return 'Minimum 8 characters'; return null; }, fillColor: cardColor, textColor: textPrimary, labelColor: textSecondary, hintColor: textTertiary),
                       const SizedBox(height: 16),
-                      _buildField(
-                        controller: _confirmCtrl,
-                        label: 'Confirm New Password',
-                        hint: '••••••••',
-                        obscure: _obscureConfirm,
-                        toggle: () => setState(
-                            () => _obscureConfirm = !_obscureConfirm),
-                        validator: (v) => v != _newCtrl.text
-                            ? 'Passwords do not match'
-                            : null,
-                      ),
+                      _buildField(context, controller: _confirmCtrl, label: 'Confirm New Password', hint: '••••••••', obscure: _obscureConfirm, toggle: () => setState(() => _obscureConfirm = !_obscureConfirm), validator: (v) => v != _newCtrl.text ? 'Passwords do not match' : null, fillColor: cardColor, textColor: textPrimary, labelColor: textSecondary, hintColor: textTertiary),
                       const SizedBox(height: 32),
                       GestureDetector(
                         onTap: isLoading ? null : _submit,
                         child: Container(
-                          width: double.infinity,
-                          height: 54,
+                          width: double.infinity, height: 54,
                           decoration: BoxDecoration(
                             gradient: AppColors.primaryGradient,
                             borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withOpacity(0.3),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
+                            boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
                           ),
                           child: Center(
                             child: isLoading
-                                ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                        color: Colors.white, strokeWidth: 2.5),
-                                  )
-                                : const Text('Update Password',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700)),
+                                ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                                : const Text('Update Password', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
                           ),
                         ),
                       ),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -183,65 +120,43 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 
-  Widget _buildField({
+  Widget _buildField(BuildContext context, {
     required TextEditingController controller,
     required String label,
     required String hint,
     required bool obscure,
     required VoidCallback toggle,
-    String? Function(String?)? validator,
+    required String? Function(String?)? validator,
+    required Color fillColor,
+    required Color textColor,
+    required Color labelColor,
+    required Color hintColor,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600)),
+        Text(label, style: TextStyle(color: labelColor, fontSize: 13, fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           obscureText: obscure,
-          style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
+          style: TextStyle(color: textColor, fontSize: 15),
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: AppColors.textTertiary),
-            prefixIcon: const Icon(Icons.lock_outline_rounded,
-                color: AppColors.textTertiary, size: 20),
+            hintStyle: TextStyle(color: hintColor),
+            prefixIcon: Icon(Icons.lock_outline_rounded, color: hintColor, size: 20),
             suffixIcon: IconButton(
-              icon: Icon(
-                obscure
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined,
-                color: AppColors.textTertiary,
-                size: 20,
-              ),
+              icon: Icon(obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: hintColor, size: 20),
               onPressed: toggle,
             ),
             filled: true,
-            fillColor: AppColors.backgroundSecondary,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide:
-                  const BorderSide(color: AppColors.primary, width: 1.5),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.error, width: 1),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide:
-                  const BorderSide(color: AppColors.error, width: 1.5),
-            ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            fillColor: fillColor,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
+            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.error, width: 1)),
+            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
         ),
       ],

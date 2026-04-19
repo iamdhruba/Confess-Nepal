@@ -28,7 +28,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NotificationProvider>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -73,7 +72,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.backgroundElevated.withOpacity(0.1),
+              color: AppColors.backgroundElevated.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.notifications_none_rounded, 
@@ -88,7 +87,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             child: Text(
               'Reaction and comment notifications for your confessions will appear here.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.5),
+              style: TextStyle(fontSize: 14, height: 1.5),
             ),
           ),
         ],
@@ -114,12 +113,12 @@ class _NotificationTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: notification.isRead 
             ? Colors.transparent 
-            : (isDark ? AppColors.primary.withOpacity(0.05) : AppColors.primary.withOpacity(0.02)),
+            : (isDark ? AppColors.primary.withValues(alpha: 0.05) : AppColors.primary.withValues(alpha: 0.02)),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: notification.isRead 
-              ? Theme.of(context).dividerColor.withOpacity(0.05)
-              : AppColors.primary.withOpacity(0.1),
+              ? Theme.of(context).dividerColor.withValues(alpha: 0.05)
+              : AppColors.primary.withValues(alpha: 0.1),
           ),
         ),
         child: Row(
@@ -151,8 +150,8 @@ class _NotificationTile extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     notification.timeAgo,
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
+                    style: TextStyle(
+                      color: isDark ? AppColors.textMuted : AppColors.textTertiaryLight,
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
                     ),
@@ -204,7 +203,7 @@ class _NotificationTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(icon, size: 16, color: color),

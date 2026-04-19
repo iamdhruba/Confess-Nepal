@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:confess_nepal/core/theme/app_colors.dart';
+import 'package:confess_nepal/core/utils/app_alerts.dart';
 import '../providers/profile_provider.dart';
 import '../../confession/providers/confession_provider.dart';
 import '../../confession/models/confession.dart';
@@ -427,15 +428,12 @@ class _ProfileScreenState extends State<ProfileScreen>
         children: [
           Row(
             children: [
-              const Text('Badges',
-                  style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
+              Text('Badges',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700)),
               const Spacer(),
               Text('${p.badges.length}/${allBadges.length}',
-                  style: const TextStyle(
-                      color: AppColors.textTertiary, fontSize: 12)),
+                  style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
           const SizedBox(height: 14),
@@ -449,26 +447,20 @@ class _ProfileScreenState extends State<ProfileScreen>
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: earned
-                      ? AppColors.primary.withOpacity(0.1)
+                      ? AppColors.primary.withValues(alpha: 0.1)
                       : Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(100),
                   border: earned
                       ? Border.all(
-                          color: AppColors.primary.withOpacity(0.3))
+                          color: AppColors.primary.withValues(alpha: 0.3))
                       : null,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(badge['name']!,
-                        style: TextStyle(
-                            color: earned
-                                ? AppColors.textPrimary
-                                : AppColors.textTertiary,
-                            fontSize: 12,
-                            fontWeight: earned
-                                ? FontWeight.w600
-                                : FontWeight.w400)),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            fontWeight: earned ? FontWeight.w600 : FontWeight.w400)),
                     if (!earned) ...[
                       const SizedBox(width: 4),
                       const Icon(Icons.lock_outline_rounded,
@@ -500,10 +492,8 @@ class _ProfileScreenState extends State<ProfileScreen>
         children: [
           Row(
             children: [
-              const Text('This Week',
-                  style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
+              Text('This Week',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700)),
               const Spacer(),
               _statChip(context, '${p.streakDays}d Streak', AppColors.primary),
@@ -529,18 +519,18 @@ class _ProfileScreenState extends State<ProfileScreen>
                       color: isLit
                           ? isToday
                               ? AppColors.primary
-                              : AppColors.primary.withOpacity(0.25)
+                              : AppColors.primary.withValues(alpha: 0.25)
                           : Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(100),
                       border: isToday
                           ? Border.all(color: AppColors.primary, width: 2)
                           : Border.all(
-                              color: isLit ? Colors.transparent : Theme.of(context).dividerColor.withOpacity(0.1),
+                              color: isLit ? Colors.transparent : Theme.of(context).dividerColor.withValues(alpha: 0.1),
                               width: 1),
                       boxShadow: isToday && isLit
                           ? [
                               BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.4),
+                                  color: AppColors.primary.withValues(alpha: 0.4),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4))
                             ]
@@ -556,7 +546,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           : Text(
                               e.value,
                               style: TextStyle(
-                                  color: Theme.of(context).dividerColor.withOpacity(0.5),
+                                  color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600),
                             ),
@@ -585,7 +575,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(100),
       ),
       child: Text(
@@ -611,10 +601,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           const Padding(
             padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
             child: Text('Settings',
-                style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700)),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
           ),
           if (p.isAdmin)
             _settingsTile(
@@ -675,13 +662,10 @@ class _ProfileScreenState extends State<ProfileScreen>
           Icon(Icons.location_city_rounded, size: 36, color: AppColors.primary),
           SizedBox(height: 12),
           Text('ConfessNepal v1.0',
-              style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600)),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
           SizedBox(height: 4),
           Text('A safe space to express freely',
-              style: TextStyle(color: AppColors.textTertiary, fontSize: 13),
+              style: TextStyle(fontSize: 13),
               textAlign: TextAlign.center),
           SizedBox(height: 12),
           Text('Made for Nepal',
@@ -691,35 +675,18 @@ class _ProfileScreenState extends State<ProfileScreen>
     ).animate().fadeIn(duration: 400.ms, delay: 400.ms);
   }
 
-  void _confirmLogout(BuildContext context, ProfileProvider p) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.backgroundCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        title: const Text('Logout?',
-            style: TextStyle(color: AppColors.textPrimary)),
-        content: const Text(
-            'You will continue as an anonymous user.',
-            style: TextStyle(color: AppColors.textSecondary)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppColors.textTertiary)),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              await p.logout();
-            },
-            child: const Text('Logout',
-                style: TextStyle(
-                    color: AppColors.error, fontWeight: FontWeight.w700)),
-          ),
-        ],
-      ),
+  void _confirmLogout(BuildContext context, ProfileProvider p) async {
+    final confirmed = await AppAlerts.showConfirm(
+      context,
+      title: 'Logout?',
+      message: 'You will continue as an anonymous user.',
+      confirmLabel: 'Logout',
+      isDanger: true,
     );
+    if (confirmed == true && context.mounted) {
+      context.read<ConfessionProvider>().clearUserData();
+      await p.logout();
+    }
   }
 
   Widget _headerBtn({
@@ -738,7 +705,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           border: gradient
               ? null
               : Border.all(
-                  color: AppColors.primary.withOpacity(0.3)),
+                  color: AppColors.primary.withValues(alpha: 0.3)),
         ),
         child: Text(label,
             style: TextStyle(
@@ -767,7 +734,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Widget _divider() => Container(
-      width: 1, height: 32, color: Theme.of(context).dividerColor.withOpacity(0.1));
+      width: 1, height: 32, color: Theme.of(context).dividerColor.withValues(alpha: 0.1));
 
   Widget _settingsTile({
     required IconData icon,
@@ -778,11 +745,10 @@ class _ProfileScreenState extends State<ProfileScreen>
     VoidCallback? onTap,
   }) {
     return ListTile(
-      leading: Icon(icon,
-          color: iconColor ?? AppColors.textSecondary, size: 20),
+      leading: Icon(icon, color: iconColor ?? Theme.of(context).textTheme.bodyMedium?.color, size: 20),
       title: Text(label,
           style: TextStyle(
-              color: labelColor ?? AppColors.textPrimary, fontSize: 14)),
+              color: labelColor ?? Theme.of(context).textTheme.bodyMedium?.color, fontSize: 14)),
       trailing: trailing ??
           (onTap != null
               ? const Icon(Icons.chevron_right_rounded,
@@ -839,7 +805,7 @@ class _ConfessionMiniCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: moodColor.withOpacity(0.15)),
+          border: Border.all(color: moodColor.withValues(alpha: 0.15)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -904,33 +870,16 @@ class _ConfessionMiniCard extends StatelessWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.backgroundCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        title: const Text('Delete confession?',
-            style: TextStyle(color: AppColors.textPrimary)),
-        content: const Text('This cannot be undone.',
-            style: TextStyle(color: AppColors.textSecondary)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppColors.textTertiary)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              if (onDelete != null) onDelete!();
-            },
-            child: const Text('Delete',
-                style: TextStyle(
-                    color: AppColors.error, fontWeight: FontWeight.w700)),
-          ),
-        ],
-      ),
+  void _confirmDelete(BuildContext context) async {
+    final confirmed = await AppAlerts.showConfirm(
+      context,
+      title: 'Delete confession?',
+      message: 'This cannot be undone.',
+      confirmLabel: 'Delete',
+      isDanger: true,
     );
+    if (confirmed == true) {
+      if (onDelete != null) onDelete!();
+    }
   }
 }

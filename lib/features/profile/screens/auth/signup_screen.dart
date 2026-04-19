@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:confess_nepal/core/theme/app_colors.dart';
+import 'package:confess_nepal/core/utils/app_alerts.dart';
 import '../../providers/profile_provider.dart';
 import 'login_screen.dart';
 
@@ -40,14 +41,7 @@ class _SignupScreenState extends State<SignupScreen> {
         );
     if (!mounted) return;
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
+      AppAlerts.showError(context, error);
     } else {
       Navigator.pop(context);
     }
@@ -58,7 +52,7 @@ class _SignupScreenState extends State<SignupScreen> {
     final isLoading = context.watch<ProfileProvider>().isAuthLoading;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundPrimary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -74,11 +68,11 @@ class _SignupScreenState extends State<SignupScreen> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.backgroundSecondary,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.arrow_back_rounded,
-                        color: AppColors.textPrimary, size: 20),
+                    child: Icon(Icons.arrow_back_rounded,
+                        color: Theme.of(context).colorScheme.onSurface, size: 20),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -201,12 +195,18 @@ class _SignupScreenState extends State<SignupScreen> {
     Widget? suffixIcon,
     String? Function(String?)? validator,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fillColor = isDark ? AppColors.backgroundSecondary : AppColors.lightElevated;
+    final textColor = isDark ? AppColors.textPrimary : AppColors.textPrimaryLight;
+    final hintColor = isDark ? AppColors.textTertiary : AppColors.textTertiaryLight;
+    final labelColor = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(
-                color: AppColors.textSecondary,
+            style: TextStyle(
+                color: labelColor,
                 fontSize: 13,
                 fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
@@ -214,15 +214,15 @@ class _SignupScreenState extends State<SignupScreen> {
           controller: controller,
           obscureText: obscure,
           keyboardType: keyboardType,
-          style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
+          style: TextStyle(color: textColor, fontSize: 15),
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: AppColors.textTertiary),
-            prefixIcon: Icon(icon, color: AppColors.textTertiary, size: 20),
+            hintStyle: TextStyle(color: hintColor),
+            prefixIcon: Icon(icon, color: hintColor, size: 20),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: AppColors.backgroundSecondary,
+            fillColor: fillColor,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide.none,
@@ -258,7 +258,7 @@ class _SignupScreenState extends State<SignupScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
+              color: AppColors.primary.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),

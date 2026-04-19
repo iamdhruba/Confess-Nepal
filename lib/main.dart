@@ -13,13 +13,6 @@ import 'shell/main_shell.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: Color(0xFF0A0A0F),
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
-
   await ApiClient.instance.init();
 
   runApp(const ConfessNepalApp());
@@ -27,6 +20,17 @@ void main() async {
 
 class ConfessNepalApp extends StatelessWidget {
   const ConfessNepalApp({super.key});
+
+  void _updateSystemUI(ThemeMode themeMode) {
+    final isDark = themeMode == ThemeMode.dark;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+    ));
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +44,7 @@ class ConfessNepalApp extends StatelessWidget {
       ],
       child: Consumer<ProfileProvider>(
         builder: (context, profileProvider, _) {
+          _updateSystemUI(profileProvider.themeMode);
           return MaterialApp(
             title: 'ConfessNepal',
             debugShowCheckedModeBanner: false,

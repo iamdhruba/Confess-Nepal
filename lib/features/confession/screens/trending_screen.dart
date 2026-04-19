@@ -65,7 +65,7 @@ class _TrendingScreenState extends State<TrendingScreen> {
               SliverAppBar(
                 floating: true,
                 snap: true,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.95),
                 surfaceTintColor: Colors.transparent,
                 automaticallyImplyLeading: false,
                 toolbarHeight: 64,
@@ -83,7 +83,7 @@ class _TrendingScreenState extends State<TrendingScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                       decoration: BoxDecoration(
-                        color: AppColors.accent.withOpacity(0.15),
+                        color: AppColors.accent.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(100),
                       ),
                       child: const Text(
@@ -150,19 +150,20 @@ class _TrendingScreenState extends State<TrendingScreen> {
                   (context, index) {
                     if (index >= trending.length) return null;
                     final confession = trending[index];
-                    return Stack(
-                      children: [
-                        ConfessionCard(
-                          confession: confession,
-                          index: index,
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  ConfessionDetailScreen(confession: confession),
+                    return RepaintBoundary(
+                      child: Stack(
+                        children: [
+                          ConfessionCard(
+                            confession: confession,
+                            index: index,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    ConfessionDetailScreen(confession: confession),
+                              ),
                             ),
                           ),
-                        ),
                         Positioned(
                           top: 4,
                           left: 10,
@@ -173,7 +174,9 @@ class _TrendingScreenState extends State<TrendingScreen> {
                               gradient:
                                   index < 3 ? AppColors.primaryGradient : null,
                               color: index >= 3
-                                  ? AppColors.backgroundElevated
+                                  ? (Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.backgroundElevated
+                                      : AppColors.lightElevated)
                                   : null,
                               borderRadius: BorderRadius.circular(100),
                               border: Border.all(
@@ -182,7 +185,7 @@ class _TrendingScreenState extends State<TrendingScreen> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withValues(alpha: 0.2),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),
@@ -201,6 +204,7 @@ class _TrendingScreenState extends State<TrendingScreen> {
                           ),
                         ),
                       ],
+                      ),
                     );
                   },
                   childCount: trending.length,
@@ -225,7 +229,7 @@ class _TrendingScreenState extends State<TrendingScreen> {
               ? const LinearGradient(colors: [Color(0xFF1A1A2E), Color(0xFF16213E)])
               : LinearGradient(colors: [AppColors.lightElevated, AppColors.lightSurface]),
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: AppColors.primary.withOpacity(0.05)),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.05)),
         ),
         child: Row(
           children: [
@@ -248,7 +252,7 @@ class _TrendingScreenState extends State<TrendingScreen> {
         width: 1,
         height: 30,
         margin: const EdgeInsets.symmetric(horizontal: 12),
-        color: AppColors.backgroundElevated,
+        color: Theme.of(context).dividerColor.withValues(alpha: 0.15),
       );
 }
 
@@ -280,16 +284,13 @@ class _TrendingStatItem extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: isHighlight ? AppColors.primary.withOpacity(0.8) : AppColors.textTertiary,
+                  color: isHighlight ? AppColors.primary.withValues(alpha: 0.8) : null,
                   fontSize: 9,
                   fontWeight: isHighlight ? FontWeight.w700 : FontWeight.w400,
                 ),
           ),
         ],
-      ).animate(target: isHighlight ? 1 : 0).shimmer(
-            duration: 2000.ms,
-            color: AppColors.primary.withOpacity(0.1),
-          ),
+      ),
     );
   }
 }
@@ -310,13 +311,13 @@ class _LocationChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.1)
+              ? AppColors.primary.withValues(alpha: 0.1)
               : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
             color: isSelected
-                ? AppColors.primary.withOpacity(0.3)
-                : Theme.of(context).dividerColor.withOpacity(0.1),
+                ? AppColors.primary.withValues(alpha: 0.3)
+                : Theme.of(context).dividerColor.withValues(alpha: 0.1),
           ),
         ),
         child: Text(

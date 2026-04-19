@@ -84,7 +84,7 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.lightElevated,
-        selectedColor: AppColors.primary.withOpacity(0.1),
+        selectedColor: AppColors.primary.withValues(alpha: 0.1),
         labelStyle: GoogleFonts.plusJakartaSans(
           fontSize: 13,
           color: AppColors.textPrimaryLight,
@@ -92,6 +92,38 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: Colors.white,
+        contentTextStyle: GoogleFonts.plusJakartaSans(
+          color: AppColors.textPrimaryLight,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: AppColors.lightBorder, width: 1),
+        ),
+        elevation: 4,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+          side: BorderSide(color: AppColors.lightBorder, width: 1),
+        ),
+        titleTextStyle: GoogleFonts.plusJakartaSans(
+          color: AppColors.textPrimaryLight,
+          fontWeight: FontWeight.w700,
+          fontSize: 18,
+        ),
+        contentTextStyle: GoogleFonts.plusJakartaSans(
+          color: AppColors.textSecondaryLight,
+          fontSize: 14,
+          height: 1.5,
         ),
       ),
     );
@@ -172,7 +204,7 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.backgroundSecondary,
-        selectedColor: AppColors.primary.withOpacity(0.2),
+        selectedColor: AppColors.primary.withValues(alpha: 0.2),
         labelStyle: GoogleFonts.plusJakartaSans(
           fontSize: 13,
           color: AppColors.textSecondary,
@@ -180,6 +212,38 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: AppColors.backgroundCard,
+        contentTextStyle: GoogleFonts.plusJakartaSans(
+          color: AppColors.textPrimary,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: AppColors.backgroundElevated, width: 1),
+        ),
+        elevation: 8,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.backgroundCard,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+          side: BorderSide(color: AppColors.backgroundElevated, width: 1),
+        ),
+        titleTextStyle: GoogleFonts.plusJakartaSans(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w700,
+          fontSize: 18,
+        ),
+        contentTextStyle: GoogleFonts.plusJakartaSans(
+          color: AppColors.textSecondary,
+          fontSize: 14,
+          height: 1.5,
         ),
       ),
     );

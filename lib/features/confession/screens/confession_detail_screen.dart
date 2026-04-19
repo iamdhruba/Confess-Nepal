@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:confess_nepal/core/theme/app_colors.dart';
+import 'package:confess_nepal/core/utils/app_alerts.dart';
 import '../models/confession.dart';
 import '../models/comment.dart';
 import '../providers/confession_provider.dart';
@@ -63,10 +64,22 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
     final moodColor = AppColors.moodColor(confession.mood);
     final userReactions = confession.userReactions;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgPrimary = isDark ? AppColors.backgroundPrimary : AppColors.lightSurface;
+    final bgSecondary = isDark ? AppColors.backgroundSecondary : AppColors.lightElevated;
+    final iconColor = isDark ? AppColors.textTertiary : AppColors.textTertiaryLight;
+    final textPrimary = isDark ? AppColors.textPrimary : AppColors.textPrimaryLight;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundPrimary,
-      body: Stack(
+      backgroundColor: bgPrimary,
+      body: Container(
+        color: bgPrimary,
+        child: Stack(
         children: [
+          // Background fill to ensure no dark bleed-through
+          Positioned.fill(
+            child: Container(color: bgPrimary),
+          ),
           Positioned(
             top: -100,
             left: -50,
@@ -76,7 +89,7 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [moodColor.withOpacity(0.08), Colors.transparent],
+                  colors: [moodColor.withValues(alpha: 0.08), Colors.transparent],
                 ),
               ),
             ),
@@ -86,17 +99,17 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
             physics: const BouncingScrollPhysics(),
             slivers: [
               SliverAppBar(
-                backgroundColor: Colors.transparent,
+                backgroundColor: bgPrimary,
                 leading: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
                     margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.backgroundSecondary,
+                      color: bgSecondary,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.arrow_back_rounded,
-                        color: AppColors.textPrimary, size: 20),
+                    child: Icon(Icons.arrow_back_rounded,
+                        color: textPrimary, size: 20),
                   ),
                 ),
                 actions: [
@@ -106,11 +119,11 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                       margin: const EdgeInsets.all(8),
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColors.backgroundSecondary,
+                        color: bgSecondary,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.flag_outlined,
-                          color: AppColors.textTertiary, size: 20),
+                      child: Icon(Icons.flag_outlined,
+                          color: iconColor, size: 20),
                     ),
                   ),
                   GestureDetector(
@@ -119,11 +132,11 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                       margin: const EdgeInsets.only(right: 8, top: 8, bottom: 8),
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColors.backgroundSecondary,
+                        color: bgSecondary,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.share_outlined,
-                          color: AppColors.textTertiary, size: 20),
+                      child: Icon(Icons.share_outlined,
+                          color: iconColor, size: 20),
                     ),
                   ),
                 ],
@@ -140,9 +153,9 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: moodColor.withOpacity(0.15),
+                              color: moodColor.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: moodColor.withOpacity(0.3)),
+                              border: Border.all(color: moodColor.withValues(alpha: 0.3)),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -176,8 +189,8 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                             height: 40,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(colors: [
-                                moodColor.withOpacity(0.3),
-                                moodColor.withOpacity(0.1),
+                                moodColor.withValues(alpha: 0.3),
+                                moodColor.withValues(alpha: 0.1),
                               ]),
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -227,7 +240,7 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                       Text(
                         confession.content,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: AppColors.textPrimary,
+                              color: textPrimary,
                               fontSize: 17,
                               height: 1.7,
                             ),
@@ -238,7 +251,7 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                           context, confessionProvider, confession, userReactions),
                       const SizedBox(height: 24),
 
-                      Container(height: 1, color: AppColors.backgroundElevated),
+                      Container(height: 1, color: isDark ? AppColors.backgroundElevated : AppColors.lightBorder),
                       const SizedBox(height: 20),
 
                       Row(
@@ -252,7 +265,7 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.15),
+                              color: AppColors.primary.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text('${confession.commentCount}',
@@ -269,10 +282,10 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                         margin: const EdgeInsets.only(top: 12, bottom: 8),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.success.withOpacity(0.08),
+                          color: AppColors.success.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                              color: AppColors.success.withOpacity(0.15)),
+                              color: AppColors.success.withValues(alpha: 0.15)),
                         ),
                         child: Row(
                           children: [
@@ -286,7 +299,7 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                                     .bodySmall
                                     ?.copyWith(
                                       color: AppColors.success
-                                          .withOpacity(0.8),
+                                          .withValues(alpha: 0.8),
                                       fontStyle: FontStyle.italic,
                                     ),
                               ),
@@ -315,7 +328,29 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
                             if (index >= _comments.length) return null;
-                            return CommentTile(comment: _comments[index]);
+                            return CommentTile(
+                              comment: _comments[index],
+                              confessionId: widget.confession.id,
+                              onReplyPosted: (reply, parentId) {
+                                setState(() {
+                                  final idx = _comments.indexWhere((c) => c.id == parentId);
+                                  if (idx != -1) {
+                                    final updated = Comment(
+                                      id: _comments[idx].id,
+                                      confessionId: _comments[idx].confessionId,
+                                      authorId: _comments[idx].authorId,
+                                      anonymousName: _comments[idx].anonymousName,
+                                      content: _comments[idx].content,
+                                      createdAt: _comments[idx].createdAt,
+                                      parentId: _comments[idx].parentId,
+                                      upvotes: _comments[idx].upvotes,
+                                      replies: [..._comments[idx].replies, reply],
+                                    );
+                                    _comments[idx] = updated;
+                                  }
+                                });
+                              },
+                            );
                           },
                           childCount: _comments.length,
                         ),
@@ -333,6 +368,7 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
             child: _buildCommentInput(context, confessionProvider),
           ),
         ],
+        ),
       ),
     );
   }
@@ -343,6 +379,8 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
     Confession confession,
     List<String> userReactions,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inactiveBg = isDark ? AppColors.backgroundSecondary : AppColors.lightElevated;
     final reactions = [
       {'key': 'relatable', 'emoji': '😭', 'label': 'Relatable', 'color': AppColors.reactionRelatable},
       {'key': 'stay_strong', 'emoji': '❤️', 'label': 'Stay Strong', 'color': AppColors.reactionStayStrong},
@@ -361,7 +399,8 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
           child: GestureDetector(
             onTap: () async {
               final delta = await provider.addReaction(confession.id, key);
-              if (mounted && delta > 0) {
+              if (!context.mounted) return;
+              if (delta > 0) {
                 context.read<ProfileProvider>().addKarma(delta);
               }
             },
@@ -371,11 +410,11 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
                 color: isActive
-                    ? color.withOpacity(0.15)
-                    : AppColors.backgroundSecondary,
+                    ? color.withValues(alpha: 0.15)
+                    : inactiveBg,
                 borderRadius: BorderRadius.circular(14),
                 border: isActive
-                    ? Border.all(color: color.withOpacity(0.3))
+                    ? Border.all(color: color.withValues(alpha: 0.3))
                     : null,
               ),
               child: Column(
@@ -396,7 +435,7 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                     r['label'] as String,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: isActive
-                              ? color.withOpacity(0.7)
+                              ? color.withValues(alpha: 0.7)
                               : AppColors.textTertiary,
                           fontSize: 9,
                         ),
@@ -412,6 +451,13 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
 
   Widget _buildCommentInput(
       BuildContext context, ConfessionProvider provider) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgPrimary = isDark ? AppColors.backgroundPrimary : AppColors.lightSurface;
+    final bgSecondary = isDark ? AppColors.backgroundSecondary : AppColors.lightElevated;
+    final borderColor = isDark ? AppColors.backgroundElevated : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.textPrimary : AppColors.textPrimaryLight;
+    final hintColor = isDark ? AppColors.textTertiary : AppColors.textTertiaryLight;
+
     return ClipRRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -419,10 +465,9 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
           padding: EdgeInsets.fromLTRB(
               16, 12, 16, MediaQuery.of(context).padding.bottom + 12),
           decoration: BoxDecoration(
-            color: AppColors.backgroundPrimary.withOpacity(0.9),
+            color: bgPrimary.withValues(alpha: 0.9),
             border: Border(
-              top: BorderSide(
-                  color: AppColors.backgroundElevated.withOpacity(0.5)),
+              top: BorderSide(color: borderColor.withValues(alpha: 0.5)),
             ),
           ),
           child: Row(
@@ -430,21 +475,21 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.backgroundSecondary,
+                    color: bgSecondary,
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: TextField(
                     controller: _commentController,
                     focusNode: _commentFocus,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textPrimary,
+                          color: textPrimary,
                         ),
                     decoration: InputDecoration(
                       hintText: 'Reply anonymously...',
                       hintStyle: Theme.of(context)
                           .textTheme
                           .bodyMedium
-                          ?.copyWith(color: AppColors.textTertiary),
+                          ?.copyWith(color: hintColor),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 18, vertical: 12),
@@ -464,17 +509,8 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                     content: text,
                   );
                   await _loadComments();
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Reply posted anonymously 💭'),
-                        backgroundColor: AppColors.primary,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                      ),
-                    );
-                  }
+                  if (!context.mounted) return;
+                  AppAlerts.showInfo(context, 'Reply posted anonymously');
                 },
                 child: Container(
                   width: 44,
@@ -496,9 +532,14 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
 
   void _showReportSheet(
       BuildContext context, ConfessionProvider provider) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? AppColors.backgroundSecondary : Colors.white;
+    final textPrimary = isDark ? AppColors.textPrimary : AppColors.textPrimaryLight;
+    final handleColor = isDark ? AppColors.textTertiary : AppColors.lightBorder;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.backgroundSecondary,
+      backgroundColor: sheetBg,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Padding(
@@ -512,7 +553,7 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                    color: AppColors.textTertiary,
+                    color: handleColor,
                     borderRadius: BorderRadius.circular(2)),
               ),
             ),
@@ -529,7 +570,7 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
             ].map((reason) => ListTile(
                   title: Text(reason,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textPrimary,
+                            color: textPrimary,
                           )),
                   onTap: () async {
                     Navigator.pop(context);
@@ -538,18 +579,8 @@ class _ConfessionDetailScreenState extends State<ConfessionDetailScreen> {
                       targetId: widget.confession.id,
                       reason: reason,
                     );
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text(
-                              'Report submitted. Thank you 💜'),
-                          backgroundColor: AppColors.primary,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                      );
-                    }
+                    if (!context.mounted) return;
+                    AppAlerts.showInfo(context, 'Report submitted. Thank you');
                   },
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),

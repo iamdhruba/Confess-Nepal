@@ -46,6 +46,7 @@ app.*.map.json
 
 # Release keystore — never commit
 android/app/keystore/
+android/keystore.properties
 
 # Backend secrets — never commit
 backend/.env

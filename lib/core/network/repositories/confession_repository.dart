@@ -45,9 +45,9 @@ class ConfessionRepository {
     final data = await _client.post('/confessions', body: {
       'content': content,
       'mood': mood,
-      if (locationTag != null) 'locationTag': locationTag,
+      'locationTag': locationTag,
       'isDisappearing': isDisappearing,
-    });
+    }..removeWhere((key, value) => value == null));
     return data['confession'];
   }
 

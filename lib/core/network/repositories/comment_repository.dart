@@ -17,8 +17,8 @@ class CommentRepository {
       '/confessions/$confessionId/comments',
       body: {
         'content': content,
-        if (parentId != null) 'parentId': parentId,
-      },
+        'parentId': parentId,
+      }..removeWhere((key, value) => value == null),
     );
     return data['comment'];
   }

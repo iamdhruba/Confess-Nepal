@@ -165,9 +165,14 @@ class _SearchScreenState extends State<SearchScreen> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
                 ),
-                child: Text('#$tag', style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.w600)),
+                child: Text('#$tag', style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.textSecondary
+                    : AppColors.textSecondaryLight,
+                fontSize: 13,
+                fontWeight: FontWeight.w600)),
               ),
             )).toList(),
           ),
@@ -184,10 +189,10 @@ class _SearchScreenState extends State<SearchScreen> {
           const Text('🔍', style: TextStyle(fontSize: 48)),
           const SizedBox(height: 16),
           const Text('No confessions found',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 18, fontWeight: FontWeight.w700)),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           const Text('Try searching with different keywords',
-              style: TextStyle(color: AppColors.textTertiary, fontSize: 13)),
+              style: TextStyle(fontSize: 13)),
         ],
       ),
     );

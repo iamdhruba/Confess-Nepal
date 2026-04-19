@@ -81,7 +81,7 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.lightElevated,
-        selectedColor: AppColors.primary.withOpacity(0.1),
+        selectedColor: AppColors.primary.withValues(alpha: 0.1),
         labelStyle: GoogleFonts.plusJakartaSans(
           fontSize: 13,
           color: AppColors.textPrimaryLight,
@@ -169,7 +169,7 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.backgroundSecondary,
-        selectedColor: AppColors.primary.withOpacity(0.2),
+        selectedColor: AppColors.primary.withValues(alpha: 0.2),
         labelStyle: GoogleFonts.plusJakartaSans(
           fontSize: 13,
           color: AppColors.textSecondary,

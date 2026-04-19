@@ -1,11 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:confess_nepal/core/theme/app_colors.dart';
 import '../features/confession/providers/confession_provider.dart';
 import '../features/ask_nepal/providers/ask_nepal_provider.dart';
-import '../features/profile/providers/profile_provider.dart';
 import '../features/confession/screens/home_screen.dart';
 import '../features/confession/screens/trending_screen.dart';
 import '../features/confession/screens/create_confession_screen.dart';
@@ -107,13 +105,13 @@ class _MainShellState extends State<MainShell>
           padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
           decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.backgroundDeep.withOpacity(0.92)
-                : AppColors.lightSurface.withOpacity(0.92),
+                ? AppColors.backgroundDeep.withValues(alpha: 0.92)
+                : AppColors.lightSurface.withValues(alpha: 0.92),
             border: Border(
               top: BorderSide(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.backgroundElevated.withOpacity(0.3)
-                    : AppColors.lightBorder.withOpacity(0.5),
+                    ? AppColors.backgroundElevated.withValues(alpha: 0.3)
+                    : AppColors.lightBorder.withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -153,7 +151,7 @@ class _MainShellState extends State<MainShell>
                           borderRadius: BorderRadius.circular(100),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFFF4D94).withOpacity(0.2),
+                              color: const Color(0xFFFF4D94).withValues(alpha: 0.2),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),
@@ -229,7 +227,7 @@ class _NavItem extends StatelessWidget {
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppColors.primary.withOpacity(0.15)
+                    ? AppColors.primary.withValues(alpha: 0.15)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(100),
               ),

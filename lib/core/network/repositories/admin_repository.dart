@@ -9,13 +9,14 @@ class AdminRepository {
     String? location,
     bool? isHidden,
   }) async {
-    final query = {
+    final query = <String, dynamic>{
       'page': page.toString(),
-      if (search != null) 'search': search,
-      if (location != null) 'location': location,
-      if (isHidden != null) 'isHidden': isHidden.toString(),
+      'search': search,
+      'location': location,
+      'isHidden': isHidden?.toString(),
     };
-    return await _client.get('/admin/confessions', query: query);
+    query.removeWhere((k, v) => v == null);
+    return await _client.get('/admin/confessions', query: query.cast<String, String>());
   }
 
   Future<void> toggleHide(String id) async {
@@ -30,7 +31,7 @@ class AdminRepository {
     int page = 1,
     bool? isHidden,
   }) async {
-    final query = {
+    final query = <String, String>{
       'page': page.toString(),
       if (isHidden != null) 'isHidden': isHidden.toString(),
     };

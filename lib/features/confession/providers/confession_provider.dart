@@ -401,6 +401,15 @@ class ConfessionProvider extends ChangeNotifier {
     }
   }
 
+  void clearUserData() {
+    _saved = [];
+    _reposted = [];
+    // Clear userReactions from all confessions
+    _confessions = _confessions.map((c) => c.copyWith(userReactions: [], userSaved: false, userReposted: false)).toList();
+    _trending = _trending.map((c) => c.copyWith(userReactions: [], userSaved: false, userReposted: false)).toList();
+    notifyListeners();
+  }
+
   void _updateCommentCount(String confessionId, int delta) {
     final idx = _confessions.indexWhere((c) => c.id == confessionId);
     if (idx != -1) {

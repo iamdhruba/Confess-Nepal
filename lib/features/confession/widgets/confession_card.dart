@@ -1,9 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:confess_nepal/core/theme/app_colors.dart';
 import '../models/confession.dart';
 import '../providers/confession_provider.dart';
@@ -39,7 +37,7 @@ class ConfessionCard extends StatelessWidget {
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(32),
           border: Border.all(
-            color: Theme.of(context).dividerColor.withOpacity(0.1),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
             width: 1.5,
           ),
         ),
@@ -68,6 +66,11 @@ class ConfessionCard extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, Color moodColor) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? AppColors.textPrimary : AppColors.textPrimaryLight;
+    final tertiaryText = isDark ? AppColors.textTertiary : AppColors.textTertiaryLight;
+    final mutedText = isDark ? AppColors.textMuted : AppColors.textTertiaryLight;
+
     return Row(
       children: [
         Expanded(
@@ -79,7 +82,7 @@ class ConfessionCard extends StatelessWidget {
               Text(
                 confession.anonymousName,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: AppColors.textPrimary,
+                      color: primaryText,
                       fontWeight: FontWeight.w900,
                       fontSize: 13,
                       letterSpacing: 0.5,
@@ -93,10 +96,10 @@ class ConfessionCard extends StatelessWidget {
                   duration: const Duration(milliseconds: 300),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: moodColor.withOpacity(0.08),
+                    color: moodColor.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(
-                      color: moodColor.withOpacity(0.2),
+                      color: moodColor.withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),
@@ -126,18 +129,18 @@ class ConfessionCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.textTertiary.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(6),
+                    color: tertiaryText.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(100),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.near_me_rounded, size: 10, color: AppColors.textTertiary),
+                      Icon(Icons.near_me_rounded, size: 10, color: tertiaryText),
                       const SizedBox(width: 4),
                       Text(
                         confession.locationTag!.toUpperCase(),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: AppColors.textTertiary,
+                              color: tertiaryText,
                               fontWeight: FontWeight.w800,
                               fontSize: 9,
                               letterSpacing: 0.5,
@@ -152,7 +155,7 @@ class ConfessionCard extends StatelessWidget {
             Text(
               confession.timeAgo.toUpperCase(),
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: AppColors.textMuted,
+                    color: mutedText,
                     fontWeight: FontWeight.w700,
                     fontSize: 8,
                     letterSpacing: 0.8,
@@ -165,10 +168,12 @@ class ConfessionCard extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? AppColors.textPrimary : AppColors.textPrimaryLight;
     return Text(
       confession.content,
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: AppColors.textPrimary.withOpacity(0.95),
+            color: textColor.withValues(alpha: 0.95),
             height: 1.6,
             fontSize: 15,
             fontWeight: FontWeight.w400,
@@ -181,6 +186,9 @@ class ConfessionCard extends StatelessWidget {
     ConfessionProvider provider,
     List<String> userReactions,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inactiveText = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
+
     final reactions = [
       _ReactionData('relatable', '😭', 'Relatable', AppColors.reactionRelatable),
       _ReactionData('stay_strong', '❤️', 'Stay Strong', AppColors.reactionStayStrong),
@@ -200,10 +208,10 @@ class ConfessionCard extends StatelessWidget {
             duration: const Duration(milliseconds: 250),
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
-            color: isActive ? r.color.withOpacity(0.12) : Colors.transparent,
+            color: isActive ? r.color.withValues(alpha: 0.12) : Colors.transparent,
               borderRadius: BorderRadius.circular(100),
               border: Border.all(
-                color: isActive ? r.color.withOpacity(0.4) : Colors.transparent,
+                color: isActive ? r.color.withValues(alpha: 0.4) : Colors.transparent,
                 width: 1,
               ),
             ),
@@ -214,7 +222,7 @@ class ConfessionCard extends StatelessWidget {
                 Text(
                   _formatCount(count),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: isActive ? r.color : AppColors.textSecondary,
+                        color: isActive ? r.color : inactiveText,
                         fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
                         fontSize: 12,
                       ),
@@ -228,6 +236,10 @@ class ConfessionCard extends StatelessWidget {
   }
 
   Widget _buildFooter(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tertiaryText = isDark ? AppColors.textTertiary : AppColors.textTertiaryLight;
+    final secondaryText = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
+
     return Row(
       children: [
         GestureDetector(
@@ -235,20 +247,20 @@ class ConfessionCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.backgroundElevated.withOpacity(0.5)
+              color: isDark
+                  ? AppColors.backgroundElevated.withValues(alpha: 0.5)
                   : AppColors.lightElevated,
               borderRadius: BorderRadius.circular(100),
             ),
             child: Row(
               children: [
-                Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.textTertiary),
+                Icon(Icons.chat_bubble_outline_rounded, size: 14, color: tertiaryText),
                 const SizedBox(width: 6),
                 Text(
                   '${confession.commentCount} replies',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textSecondary,
+                        color: secondaryText,
                       ),
                 ),
               ],
@@ -257,26 +269,24 @@ class ConfessionCard extends StatelessWidget {
         ),
         const Spacer(),
         if (confession.isDisappearing) ...[
-          Icon(Icons.timer_outlined, size: 14, color: AppColors.warning.withOpacity(0.8)),
+          Icon(Icons.timer_outlined, size: 14, color: AppColors.warning.withValues(alpha: 0.8)),
           const SizedBox(width: 10),
         ],
-        // Save
         GestureDetector(
           onTap: () => _requireLogin(context, () => context.read<ConfessionProvider>().toggleSave(confession.id)),
           child: _FooterAction(
             icon: confession.userSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
             count: confession.saveCount,
-            color: confession.userSaved ? AppColors.primary : AppColors.textTertiary,
+            color: confession.userSaved ? AppColors.primary : tertiaryText,
           ),
         ),
         const SizedBox(width: 14),
-        // Repost
         GestureDetector(
           onTap: () => _requireLogin(context, () => _handleRepost(context)),
           child: _FooterAction(
             icon: confession.userReposted ? Icons.repeat_on_rounded : Icons.repeat_rounded,
             count: confession.repostCount,
-            color: confession.userReposted ? AppColors.accent : AppColors.textTertiary,
+            color: confession.userReposted ? AppColors.accent : tertiaryText,
           ),
         ),
         const SizedBox(width: 14),
@@ -284,10 +294,9 @@ class ConfessionCard extends StatelessWidget {
           Icon(Icons.mic_none_rounded, size: 16, color: AppColors.primary),
           const SizedBox(width: 14),
         ],
-        // Share
         GestureDetector(
           onTap: () => _showShareSheet(context),
-          child: const Icon(Icons.ios_share_rounded, size: 17, color: AppColors.textTertiary),
+          child: Icon(Icons.ios_share_rounded, size: 17, color: tertiaryText),
         ),
       ],
     );

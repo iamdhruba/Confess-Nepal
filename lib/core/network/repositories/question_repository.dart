@@ -19,8 +19,8 @@ class QuestionRepository {
   }) async {
     final data = await _client.post('/questions', body: {
       'question': question,
-      if (category != null) 'category': category,
-    });
+      'category': category,
+    }..removeWhere((key, value) => value == null));
     return data['question'];
   }
 

@@ -19,8 +19,8 @@ class AuthRepository {
       'deviceId': deviceId,
       'email': email,
       'password': password,
-      if (username != null) 'username': username,
-    });
+      'username': username,
+    }..removeWhere((key, value) => value == null));
     await _client.saveToken(data['token']);
     return data['user'];
   }
@@ -62,9 +62,9 @@ class AuthRepository {
 
   Future<Map<String, dynamic>> updateProfile({String? username, String? bio}) async {
     final data = await _client.patch('/auth/update-profile', body: {
-      if (username != null) 'username': username,
-      if (bio != null) 'bio': bio,
-    });
+      'username': username,
+      'bio': bio,
+    }..removeWhere((key, value) => value == null));
     return data['user'];
   }
 

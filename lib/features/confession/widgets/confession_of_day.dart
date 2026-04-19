@@ -21,7 +21,7 @@ class ConfessionOfDayCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
+              color: AppColors.primary.withValues(alpha: 0.3),
               blurRadius: 30,
               offset: const Offset(0, 12),
             ),
@@ -36,8 +36,8 @@ class ConfessionOfDayCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.white.withOpacity(0.1),
-                    Colors.white.withOpacity(0.05),
+                    Colors.white.withValues(alpha: 0.1),
+                    Colors.white.withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -51,7 +51,7 @@ class ConfessionOfDayCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -92,7 +92,7 @@ class ConfessionOfDayCard extends StatelessWidget {
                       Text(
                         '— ${confession.anonymousName}',
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                               fontStyle: FontStyle.italic,
                             ),
                       ),
@@ -100,7 +100,7 @@ class ConfessionOfDayCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -114,7 +114,7 @@ class ConfessionOfDayCard extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text('reactions',
                                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      color: Colors.white.withOpacity(0.7),
+                                      color: Colors.white.withValues(alpha: 0.7),
                                     )),
                           ],
                         ),
@@ -128,10 +128,7 @@ class ConfessionOfDayCard extends StatelessWidget {
         ),
       ),
     )
-        .animate(onPlay: (controller) => controller.repeat(reverse: true))
-        .shimmer(
-          duration: 3000.ms,
-          color: Colors.white.withOpacity(0.05),
-        );
+        .animate()
+        .fadeIn(duration: 400.ms);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:confess_nepal/core/theme/app_colors.dart';
+import 'package:confess_nepal/core/utils/app_alerts.dart';
 import '../../../core/constants/app_constants.dart';
 import '../providers/confession_provider.dart';
 import '../../../features/profile/providers/profile_provider.dart';
@@ -72,7 +73,7 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [moodColor.withOpacity(0.1), Colors.transparent],
+                  colors: [moodColor.withValues(alpha: 0.1), Colors.transparent],
                 ),
               ),
             ),
@@ -161,7 +162,7 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
       ),
       child: Row(
         children: [
@@ -196,7 +197,7 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(100)),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -229,6 +230,9 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
     final presetMoods = moods.map((m) => m['key']!).toList();
     final bool isCustomSelected = !presetMoods.contains(_selectedMood);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inactiveText = isDark ? AppColors.textTertiary : AppColors.textTertiaryLight;
+
     return Row(
       children: [
         ...moods.map((m) {
@@ -244,22 +248,22 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? color.withOpacity(0.15)
+                      ? color.withValues(alpha: 0.15)
                       : Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isSelected ? color.withOpacity(0.4) : Colors.transparent,
+                    color: isSelected ? color.withValues(alpha: 0.4) : Colors.transparent,
                     width: 1.5,
                   ),
                   boxShadow: isSelected
-                      ? [BoxShadow(color: color.withOpacity(0.15), blurRadius: 12)]
+                      ? [BoxShadow(color: color.withValues(alpha: 0.15), blurRadius: 12)]
                       : [],
                 ),
                 child: Center(
                   child: Text(
                     m['label']!,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: isSelected ? color : AppColors.textTertiary,
+                          color: isSelected ? color : inactiveText,
                           fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                           fontSize: 10,
                         ),
@@ -268,7 +272,7 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
               ),
             ),
           );
-        }).toList(),
+        }),
         Expanded(
           child: GestureDetector(
             onTap: () => _showCustomMoodDialog(context),
@@ -278,11 +282,11 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
                 color: isCustomSelected
-                    ? AppColors.primary.withOpacity(0.15)
+                    ? AppColors.primary.withValues(alpha: 0.15)
                     : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isCustomSelected ? AppColors.primary.withOpacity(0.4) : AppColors.primary.withOpacity(0.1),
+                  color: isCustomSelected ? AppColors.primary.withValues(alpha: 0.4) : AppColors.primary.withValues(alpha: 0.1),
                   width: 1.5,
                 ),
               ),
@@ -290,7 +294,7 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
                 child: Text(
                   isCustomSelected ? _selectedMood : 'Other',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: isCustomSelected ? AppColors.primary : AppColors.textTertiary,
+                        color: isCustomSelected ? AppColors.primary : inactiveText,
                         fontWeight: isCustomSelected ? FontWeight.w700 : FontWeight.w500,
                         fontSize: 10,
                       ),
@@ -305,44 +309,19 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
     ).animate().fadeIn(duration: 400.ms, delay: 100.ms);
   }
 
-  void _showCustomMoodDialog(BuildContext context) {
-    final controller = TextEditingController(text: !['sad', 'love', 'funny', 'dark', 'confused'].contains(_selectedMood) ? _selectedMood : '');
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.backgroundCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        title: const Text('How are you feeling?', style: TextStyle(color: AppColors.textPrimary)),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: const TextStyle(color: AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: 'e.g. Lonely, Tired, Grateful...',
-            hintStyle: const TextStyle(color: AppColors.textTertiary),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary.withOpacity(0.3))),
-            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary)),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textTertiary)),
-          ),
-          TextButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                final text = controller.text.trim();
-                final formatted = text[0].toUpperCase() + text.substring(1).toLowerCase();
-                setState(() => _selectedMood = formatted);
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text('Save', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
+  void _showCustomMoodDialog(BuildContext context) async {
+    final initialValue = !['sad', 'love', 'funny', 'dark', 'confused'].contains(_selectedMood) ? _selectedMood : null;
+    final result = await AppAlerts.showInput(
+      context,
+      title: 'How are you feeling?',
+      hintText: 'e.g. Lonely, Tired, Grateful...',
+      initialValue: initialValue,
+      confirmLabel: 'Save',
     );
+    if (result != null) {
+      final formatted = result[0].toUpperCase() + result.substring(1).toLowerCase();
+      setState(() => _selectedMood = formatted);
+    }
   }
 
   Widget _buildTextInput(BuildContext context, Color moodColor) {
@@ -374,13 +353,13 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(24),
                 borderSide: BorderSide(
-                  color: Theme.of(context).dividerColor.withOpacity(0.1),
+                  color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(24),
                 borderSide: BorderSide(
-                  color: moodColor.withOpacity(0.5),
+                  color: moodColor.withValues(alpha: 0.5),
                   width: 1.5,
                 ),
               ),
@@ -406,12 +385,16 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
       displayLocations.add(_selectedLocation!);
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sectionLabel = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
+    final inactiveText = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Add location tag (optional)',
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: sectionLabel,
                 )),
         const SizedBox(height: 8),
         SizedBox(
@@ -428,7 +411,7 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.primary.withOpacity(0.2), style: BorderStyle.solid),
+                      border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), style: BorderStyle.solid),
                     ),
                     child: const Row(
                       children: [
@@ -455,12 +438,12 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppColors.primary.withOpacity(0.15)
+                          ? AppColors.primary.withValues(alpha: 0.15)
                           : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isSelected
-                            ? AppColors.primary.withOpacity(0.4)
+                            ? AppColors.primary.withValues(alpha: 0.4)
                             : Colors.transparent,
                       ),
                     ),
@@ -475,7 +458,7 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
                           Text(
                             location,
                             style: TextStyle(
-                              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                              color: isSelected ? AppColors.primary : inactiveText,
                               fontSize: 12,
                               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                             ),
@@ -493,42 +476,16 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
     ).animate().fadeIn(duration: 400.ms, delay: 300.ms);
   }
 
-  void _showCustomLocationDialog(BuildContext context) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.backgroundCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        title: const Text('New Location', style: TextStyle(color: AppColors.textPrimary)),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: const TextStyle(color: AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: 'e.g. Basantapur, Lalitpur...',
-            hintStyle: const TextStyle(color: AppColors.textTertiary),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary.withOpacity(0.3))),
-            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary)),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textTertiary)),
-          ),
-          TextButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                setState(() => _selectedLocation = controller.text.trim());
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text('Add', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
+  void _showCustomLocationDialog(BuildContext context) async {
+    final result = await AppAlerts.showInput(
+      context,
+      title: 'New Location',
+      hintText: 'e.g. Basantapur, Lalitpur...',
+      confirmLabel: 'Add',
     );
+    if (result != null) {
+      setState(() => _selectedLocation = result);
+    }
   }
 
   Widget _buildOptions(BuildContext context, ProfileProvider p) {
@@ -542,12 +499,12 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: _isDisappearing
-                    ? AppColors.warning.withOpacity(0.1)
+                    ? AppColors.warning.withValues(alpha: 0.1)
                     : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
                   color: _isDisappearing
-                      ? AppColors.warning.withOpacity(0.3)
+                      ? AppColors.warning.withValues(alpha: 0.3)
                       : Colors.transparent,
                 ),
               ),
@@ -573,26 +530,21 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
             onTap: p.hasEmail 
                 ? () => setState(() => _isDisappearing = false)
                 : () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('🔐 Signup to post permanent confessions!'),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
+                    AppAlerts.showWarning(context, 'Signup to post permanent confessions');
                   },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: !p.hasEmail 
-                    ? Theme.of(context).disabledColor.withOpacity(0.05)
+                    ? Theme.of(context).disabledColor.withValues(alpha: 0.05)
                     : !_isDisappearing
-                        ? AppColors.primary.withOpacity(0.1)
+                        ? AppColors.primary.withValues(alpha: 0.1)
                         : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
                   color: !_isDisappearing && p.hasEmail
-                      ? AppColors.primary.withOpacity(0.3)
+                      ? AppColors.primary.withValues(alpha: 0.3)
                       : Colors.transparent,
                 ),
               ),
@@ -601,14 +553,14 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
                   Icon(
                       p.hasEmail ? Icons.all_inclusive_rounded : Icons.lock_outline_rounded,
                       color: !p.hasEmail 
-                          ? AppColors.textTertiary.withOpacity(0.5)
+                          ? AppColors.textTertiary.withValues(alpha: 0.5)
                           : !_isDisappearing ? AppColors.primary : AppColors.textTertiary,
                       size: 22),
                   const SizedBox(height: 6),
                   Text(p.hasEmail ? 'Permanent' : 'LOCKED',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             color: !p.hasEmail 
-                                ? AppColors.textTertiary.withOpacity(0.5)
+                                ? AppColors.textTertiary.withValues(alpha: 0.5)
                                 : !_isDisappearing ? AppColors.primary : AppColors.textTertiary,
                             fontWeight: !_isDisappearing && p.hasEmail ? FontWeight.w600 : FontWeight.w400,
                           )),
@@ -628,6 +580,7 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
     return GestureDetector(
       onTap: isValid
           ? () async {
+              if (!context.mounted) return;
               final confessionProvider = context.read<ConfessionProvider>();
               final karmaDelta = await confessionProvider.addConfession(
                 content: _contentController.text.trim(),
@@ -636,18 +589,15 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
                 isDisappearing: _isDisappearing,
                 profileProvider: profileProvider,
               );
+              if (!context.mounted) return;
               profileProvider.incrementStreak();
               profileProvider.incrementTotalConfessions();
               profileProvider.addKarma(karmaDelta);
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Confession posted anonymously!'),
-                  backgroundColor: moodColor.withOpacity(0.9),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100)),
-                ),
+              AppAlerts.showCustom(
+                context,
+                message: 'Confession posted anonymously',
+                accentColor: moodColor,
               );
             }
           : null,
@@ -662,7 +612,7 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
           boxShadow: isValid
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   )
@@ -695,13 +645,13 @@ class _CreateConfessionScreenState extends State<CreateConfessionScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor.withOpacity(0.5),
+        color: Theme.of(context).cardColor.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Row(
         children: [
           Icon(Icons.shield_outlined,
-              size: 18, color: AppColors.success.withOpacity(0.7)),
+              size: 18, color: AppColors.success.withValues(alpha: 0.7)),
           const SizedBox(width: 10),
           Expanded(
             child: Text(

@@ -20,7 +20,7 @@ class NightModeBanner extends StatelessWidget {
           end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.moodDark.withOpacity(0.2)),
+        border: Border.all(color: AppColors.moodDark.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -36,7 +36,7 @@ class NightModeBanner extends StatelessWidget {
             child: Text(
               NightMode.nightMessage,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.moodDark.withOpacity(0.9),
+                    color: AppColors.moodDark.withValues(alpha: 0.9),
                     fontStyle: FontStyle.italic,
                   ),
             ),

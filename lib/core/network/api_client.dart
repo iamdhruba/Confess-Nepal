@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -20,17 +22,16 @@ class ApiClient {
   // Set via --dart-define=BASE_URL=https://your-app.onrender.com/api at build time
   // Defaults: web=localhost, Android emulator=10.0.2.2
   static String get _baseUrl {
-    const defined = String.fromEnvironment('BASE_URL', defaultValue: 'https://confess-nepal.onrender.com/api');
+    const defined = String.fromEnvironment('BASE_URL');
     if (defined.isNotEmpty) return defined;
-    if (kIsWeb) return 'http://localhost:5000/api';
-    return 'http://10.0.2.2:5000/api';
+    // Production fallback — always points to Render
+    if (kIsWeb) return 'https://confess-nepal.onrender.com/api';
+    return 'https://confess-nepal.onrender.com/api';
   }
   static const String _tokenKey = 'auth_token';
 
   // Lazy — not constructed until first use, avoids platform channel crash
-  FlutterSecureStorage get _secureStorage => const FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true),
-      );
+  FlutterSecureStorage get _secureStorage => const FlutterSecureStorage();
 
   String? _token;
 
@@ -70,45 +71,92 @@ class ApiClient {
         if (_token != null) 'Authorization': 'Bearer $_token',
       };
 
-  static const _timeout = Duration(seconds: 15);
+  static const _timeout = Duration(seconds: 30);
 
   Future<dynamic> get(String path, {Map<String, String>? query}) async {
     final uri = Uri.parse('$_baseUrl$path').replace(queryParameters: query);
-    final response = await http.get(uri, headers: _headers).timeout(_timeout);
-    return _handleResponse(response);
+    try {
+      final response = await http.get(uri, headers: _headers).timeout(_timeout);
+      return _handleResponse(response);
+    } on TimeoutException {
+      throw ApiException('Request timed out. Please try again.');
+    } on SocketException {
+      throw ApiException('No internet connection.');
+    } on FormatException {
+      throw ApiException('Invalid response from server.');
+    } catch (e) {
+      throw ApiException('Network error: ${e.toString()}');
+    }
   }
 
   Future<dynamic> post(String path, {Map<String, dynamic>? body}) async {
     final uri = Uri.parse('$_baseUrl$path');
-    final response = await http
-        .post(uri, headers: _headers, body: body != null ? jsonEncode(body) : null)
-        .timeout(_timeout);
-    return _handleResponse(response);
+    try {
+      final response = await http
+          .post(uri, headers: _headers, body: body != null ? jsonEncode(body) : null)
+          .timeout(_timeout);
+      return _handleResponse(response);
+    } on TimeoutException {
+      throw ApiException('Request timed out. Please try again.');
+    } on SocketException {
+      throw ApiException('No internet connection.');
+    } on FormatException {
+      throw ApiException('Invalid response from server.');
+    } catch (e) {
+      throw ApiException('Network error: ${e.toString()}');
+    }
   }
 
   Future<dynamic> patch(String path, {Map<String, dynamic>? body}) async {
     final uri = Uri.parse('$_baseUrl$path');
-    final response = await http
-        .patch(uri, headers: _headers, body: body != null ? jsonEncode(body) : null)
-        .timeout(_timeout);
-    return _handleResponse(response);
+    try {
+      final response = await http
+          .patch(uri, headers: _headers, body: body != null ? jsonEncode(body) : null)
+          .timeout(_timeout);
+      return _handleResponse(response);
+    } on TimeoutException {
+      throw ApiException('Request timed out. Please try again.');
+    } on SocketException {
+      throw ApiException('No internet connection.');
+    } on FormatException {
+      throw ApiException('Invalid response from server.');
+    } catch (e) {
+      throw ApiException('Network error: ${e.toString()}');
+    }
   }
 
   Future<dynamic> delete(String path) async {
     final uri = Uri.parse('$_baseUrl$path');
-    final response =
-        await http.delete(uri, headers: _headers).timeout(_timeout);
-    return _handleResponse(response);
+    try {
+      final response =
+          await http.delete(uri, headers: _headers).timeout(_timeout);
+      return _handleResponse(response);
+    } on TimeoutException {
+      throw ApiException('Request timed out. Please try again.');
+    } on SocketException {
+      throw ApiException('No internet connection.');
+    } on FormatException {
+      throw ApiException('Invalid response from server.');
+    } catch (e) {
+      throw ApiException('Network error: ${e.toString()}');
+    }
   }
 
   dynamic _handleResponse(http.Response response) {
-    final body = jsonDecode(response.body);
     if (response.statusCode >= 200 && response.statusCode < 300) {
+      final body = response.body.isEmpty ? {} : jsonDecode(response.body);
       return body;
     }
-    throw ApiException(
-      body['message'] ?? 'Something went wrong',
-      statusCode: response.statusCode,
-    );
+    
+    String errorMessage = 'Something went wrong';
+    try {
+      final body = jsonDecode(response.body);
+      errorMessage = body['message'] ?? errorMessage;
+    } catch (_) {
+      // If JSON parsing fails, use status code message
+      errorMessage = 'Error ${response.statusCode}';
+    }
+    
+    throw ApiException(errorMessage, statusCode: response.statusCode);
   }
 }

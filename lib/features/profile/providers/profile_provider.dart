@@ -253,9 +253,31 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    // Clear token
     await ApiClient.instance.clearToken();
-    // Re-register as anonymous device user
+    // Reset all local state immediately
+    _userId = '';
+    _email = '';
+    _bio = '';
+    _hasEmail = false;
+    _role = 'user';
+    _badges = [];
+    _karma = 0;
+    _streakDays = 0;
+    _totalConfessions = 0;
+    _totalComments = 0;
+    notifyListeners();
+    // Generate a NEW device ID so this device gets a fresh anonymous account
+    final prefs = await SharedPreferences.getInstance();
+    final newDeviceId = 'device_${DateTime.now().millisecondsSinceEpoch}';
+    await prefs.setString('device_id', newDeviceId);
+    // Register fresh anonymous account
     await _deviceRegister();
+  }
+
+  void resetSessionData() {
+    // Called by other providers to clear user-specific cached data on logout
+    notifyListeners();
   }
 
   void _applyUser(Map<String, dynamic> user) {

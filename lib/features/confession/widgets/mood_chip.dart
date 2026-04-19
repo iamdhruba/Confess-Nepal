@@ -27,18 +27,18 @@ class MoodChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected 
-              ? color.withOpacity(0.15) 
-              : Theme.of(context).cardColor.withOpacity(0.6),
+              ? color.withValues(alpha: 0.15) 
+              : Theme.of(context).cardColor.withValues(alpha: 0.6),
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
             color: isSelected 
-                ? color.withOpacity(0.4) 
-                : Theme.of(context).dividerColor.withOpacity(0.08),
+                ? color.withValues(alpha: 0.4) 
+                : Theme.of(context).dividerColor.withValues(alpha: 0.08),
             width: 1.2,
           ),
           boxShadow: isSelected ? [
             BoxShadow(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, 2),
             )
@@ -47,7 +47,7 @@ class MoodChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? color : AppColors.textSecondary,
+            color: isSelected ? color : Theme.of(context).textTheme.bodySmall?.color,
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
             letterSpacing: 0.1,
@@ -63,7 +63,7 @@ class MoodFilterBar extends StatelessWidget {
   final ValueChanged<String?> onMoodSelected;
   final List<String> dynamicMoods;
 
-  MoodFilterBar({
+  const MoodFilterBar({
     super.key,
     this.selectedMood,
     required this.onMoodSelected,
@@ -111,13 +111,13 @@ class MoodFilterBar extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 decoration: BoxDecoration(
                   color: isAllSelected
-                      ? AppColors.primary.withOpacity(0.2)
+                      ? AppColors.primary.withValues(alpha: 0.2)
                       : Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(100),
                   border: Border.all(
                     color: isAllSelected
-                        ? AppColors.primary.withOpacity(0.5)
-                        : Theme.of(context).dividerColor.withOpacity(0.05),
+                        ? AppColors.primary.withValues(alpha: 0.5)
+                        : Theme.of(context).dividerColor.withValues(alpha: 0.05),
                     width: 1.5,
                   ),
                 ),
@@ -127,7 +127,7 @@ class MoodFilterBar extends StatelessWidget {
                     style: TextStyle(
                       color: isAllSelected 
                           ? AppColors.primary 
-                          : Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                          : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
                       fontSize: 13,
                       fontWeight: isAllSelected ? FontWeight.w700 : FontWeight.w500,
                     ),

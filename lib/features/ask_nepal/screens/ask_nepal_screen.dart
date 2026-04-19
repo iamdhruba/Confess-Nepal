@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:confess_nepal/core/theme/app_colors.dart';
+import 'package:confess_nepal/core/utils/app_alerts.dart';
 import '../../../core/constants/app_constants.dart';
 import '../providers/ask_nepal_provider.dart';
 import 'ask_detail_screen.dart';
@@ -36,7 +37,7 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
           SliverAppBar(
             floating: true,
             snap: true,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.95),
             surfaceTintColor: Colors.transparent,
             automaticallyImplyLeading: false,
             toolbarHeight: 64,
@@ -59,7 +60,7 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                     ? const LinearGradient(colors: [Color(0xFF1E1E2E), Color(0xFF252540)])
                     : LinearGradient(colors: [AppColors.lightElevated, Color(0xFFE8E8FF)]),
                 borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: AppColors.primary.withOpacity(0.15)),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,13 +73,13 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                   TextField(
                     controller: _questionController,
                     maxLines: 2,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                     decoration: InputDecoration(
                       hintText: 'What would you like to ask Nepal?',
                       hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textTertiary,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.textTertiary
+                                : AppColors.textTertiaryLight,
                           ),
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.surface,
@@ -108,12 +109,12 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                                           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                                           decoration: BoxDecoration(
                                             color: _selectedCategory == cat
-                                                ? AppColors.primary.withOpacity(0.15)
+                                                ? AppColors.primary.withValues(alpha: 0.15)
                                                 : Theme.of(context).colorScheme.surface,
                                             borderRadius: BorderRadius.circular(100),
                                             border: Border.all(
                                               color: _selectedCategory == cat
-                                                  ? AppColors.primary.withOpacity(0.4)
+                                                  ? AppColors.primary.withValues(alpha: 0.4)
                                                   : Colors.transparent,
                                             ),
                                           ),
@@ -143,22 +144,16 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                         onTap: () async {
                           if (_questionController.text.trim().length >=
                               AppConstants.minQuestionChars) {
+                            if (!context.mounted) return;
                             final profileProvider = context.read<ProfileProvider>();
                             final karmaDelta = await askProvider.addQuestion(
                               _questionController.text.trim(),
                               _selectedCategory,
                             );
+                            if (!context.mounted) return;
                             profileProvider.addKarma(karmaDelta);
                             _questionController.clear();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text('Question posted!'),
-                                backgroundColor: AppColors.primary,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(100)),
-                              ),
-                            );
+                            AppAlerts.showInfo(context, 'Question posted');
                           }
                         },
                         child: Container(
@@ -211,7 +206,7 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.15),
+                          color: AppColors.primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: const Text('Retry', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
@@ -243,7 +238,7 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: AppColors.primary.withOpacity(0.08)),
+                      border: Border.all(color: AppColors.primary.withValues(alpha: 0.08)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,7 +248,7 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(100),
                               ),
                               child: Text(
@@ -268,8 +263,8 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                             ),
                             const Spacer(),
                             Text(q.timeAgo.toUpperCase(),
-                                style: const TextStyle(
-                                  color: AppColors.textMuted,
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.textTertiaryLight,
                                   fontSize: 9,
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: 0.2,
@@ -280,7 +275,6 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                         Text(
                           q.question,
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 15,
                                 height: 1.4,
@@ -289,12 +283,11 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                         const SizedBox(height: 16),
                         Row(
                           children: [
-                            const Icon(Icons.person_outline_rounded,
-                                size: 12, color: AppColors.textTertiary),
+                            Icon(Icons.person_outline_rounded,
+                                size: 12, color: Theme.of(context).brightness == Brightness.dark ? AppColors.textTertiary : AppColors.textTertiaryLight),
                             const SizedBox(width: 4),
                             Text(q.anonymousName,
                                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      color: AppColors.textTertiary,
                                       fontSize: 11,
                                     )),
                             const Spacer(),
@@ -305,7 +298,7 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withOpacity(0.05),
+                                  color: AppColors.primary.withValues(alpha: 0.05),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Row(
@@ -327,17 +320,17 @@ class _AskNepalScreenState extends State<AskNepalScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: AppColors.textSecondary.withOpacity(0.05),
+                                color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.chat_bubble_outline_rounded,
-                                      size: 14, color: AppColors.textSecondary),
+                                  Icon(Icons.chat_bubble_outline_rounded,
+                                      size: 14, color: Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.textSecondaryLight),
                                   const SizedBox(width: 4),
                                   Text('${q.answerCount}',
-                                      style: const TextStyle(
-                                        color: AppColors.textSecondary,
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.textSecondaryLight,
                                         fontSize: 11,
                                         fontWeight: FontWeight.w900,
                                       )),

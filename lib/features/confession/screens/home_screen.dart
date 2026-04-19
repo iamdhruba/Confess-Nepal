@@ -28,22 +28,27 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final p = context.read<ConfessionProvider>();
-      p.loadLocations();
-      p.loadMoods();
-      // Wait for ProfileProvider to finish init before loading notifications
-      final profile = context.read<ProfileProvider>();
-      if (profile.isLoading) {
-        await Future.doWhile(() async {
-          await Future.delayed(const Duration(milliseconds: 100));
-          return context.read<ProfileProvider>().isLoading;
-        });
-      }
-      if (mounted) {
-        context.read<NotificationProvider>().loadNotifications();
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialData();
     });
+  }
+
+  Future<void> _loadInitialData() async {
+    if (!mounted) return;
+    final confessionProvider = context.read<ConfessionProvider>();
+    confessionProvider.loadLocations();
+    confessionProvider.loadMoods();
+    // Wait for ProfileProvider to finish init before loading notifications
+    final profileProvider = context.read<ProfileProvider>();
+    if (profileProvider.isLoading) {
+      await Future.doWhile(() async {
+        await Future.delayed(const Duration(milliseconds: 100));
+        return profileProvider.isLoading;
+      });
+    }
+    if (!mounted) return;
+    final notificationProvider = context.read<NotificationProvider>();
+    notificationProvider.loadNotifications();
   }
 
   void _onScroll() {
@@ -82,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
               floating: true,
               snap: true,
               backgroundColor:
-                  Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
+                  Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.95),
               surfaceTintColor: Colors.transparent,
               toolbarHeight: 64,
               title: Row(
@@ -233,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.15),
+                            color: AppColors.primary.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Text('Retry', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
@@ -248,10 +253,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final confession = confessionProvider.confessions[index];
-                    return ConfessionCard(
-                      confession: confession,
-                      index: index,
-                      onTap: () => _openDetail(context, confession),
+                    return RepaintBoundary(
+                      child: ConfessionCard(
+                        confession: confession,
+                        index: index,
+                        onTap: () => _openDetail(context, confession),
+                      ),
                     );
                   },
                   childCount: confessionProvider.confessions.length,
@@ -340,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     border: Border.all(
                       color: isSelected
                           ? AppColors.primary
-                          : Theme.of(context).dividerColor.withOpacity(0.05),
+                          : Theme.of(context).dividerColor.withValues(alpha: 0.05),
                     ),
                   ),
                   child: Center(
@@ -389,7 +396,7 @@ class _AppBarBtn extends StatelessWidget {
             decoration: BoxDecoration(
               color: isDark ? AppColors.backgroundSecondary : AppColors.lightElevated,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withOpacity(0.05)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
             ),
             child: Icon(
               icon,
