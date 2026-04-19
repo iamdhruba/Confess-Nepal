@@ -19,7 +19,7 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['reaction', 'comment', 'upvote', 'answer', 'mention', 'system'],
+      enum: ['reaction', 'comment', 'upvote', 'answer', 'mention', 'system', 'dm'],
       required: true,
     },
     message: {
@@ -32,7 +32,7 @@ const notificationSchema = new mongoose.Schema(
     },
     targetModel: {
       type: String,
-      enum: ['Confession', 'Question'],
+      enum: ['Confession', 'Question', 'Message'],
       required: true,
     },
     isRead: {

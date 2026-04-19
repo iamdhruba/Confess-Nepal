@@ -9,11 +9,19 @@ const startServer = async () => {
   await connectDB();
   startCronJobs();
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     if (process.env.NODE_ENV !== 'production') {
       console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
     }
   });
+
+  // Graceful shutdown on SIGTERM (Render redeploy) and SIGINT (Ctrl+C)
+  const shutdown = () => {
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(1), 10000); // force exit after 10s
+  };
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 };
 
 startServer();
