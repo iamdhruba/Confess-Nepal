@@ -3,7 +3,7 @@ services:
     name: confess-nepal-backend
     runtime: node
     rootDir: .
-    buildCommand: npm install
+    buildCommand: npm install --production=false
     startCommand: npm start
     envVars:
       - key: NODE_ENV
